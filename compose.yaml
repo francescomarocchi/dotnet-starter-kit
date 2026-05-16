@@ -1,0 +1,21 @@
+﻿services:
+  digitstarterkit:
+    build:
+      context: .
+      dockerfile: DigitStarterKit/Dockerfile
+      target: dev
+    working_dir: /src
+    command: dotnet watch run --project DigitStarterKit/DigitStarterKit.csproj --urls http://0.0.0.0:8080
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      DOTNET_USE_POLLING_FILE_WATCHER: "1"
+    ports:
+      - "5269:8080"
+    volumes:
+      - ./:/src
+      - nuget-packages:/root/.nuget/packages
+
+volumes:
+  nuget-packages:
+

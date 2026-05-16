@@ -1,0 +1,6 @@
+@DigitStarterKit_HostAddress = http://localhost:5269
+
+GET {{DigitStarterKit_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
