@@ -1,4 +1,4 @@
-namespace Core.Application;
+namespace Core.Application.Dispatcher;
 
 public interface IQuery<TResult> { }
 public interface IQueryHandler<in TQuery, TResult> 

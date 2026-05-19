@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Core.Application;
+namespace Core.Application.Dispatcher;
 
 internal abstract class QueryHandlerWrapper<TResult>
 {

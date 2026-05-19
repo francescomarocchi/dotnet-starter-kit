@@ -1,4 +1,4 @@
-namespace Core.Application;
+namespace Core.Application.Dispatcher;
 
 public interface ICommand<TResult> { }
 public interface ICommandHandler<in TCommand, TResult> 

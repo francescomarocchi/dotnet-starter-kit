@@ -1,4 +1,4 @@
-namespace Core.Application;
+namespace Core.Application.Dispatcher;
 
 public class InternalDispatcher(IServiceProvider serviceProvider)
 {

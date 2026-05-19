@@ -1,41 +1,29 @@
+using System.Text.Json.Serialization;
 using Core.Application;
+using Core.Application.Features.Authentication;
+using Core.Application.Features.Products;
 using DigitStarterKit.Api;
-using Infrastructure;
+using Infrastructure.Features.Authentication;
+using Infrastructure.Features.Products;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+});
+
 builder.Services.AddOpenApi();
 
-var commandHandlers = typeof(GetProductHandler).Assembly.GetTypes()
-    .Where(t => t.GetInterfaces().Any(i => 
-        i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICommandHandler<,>)));
+builder.Services.AddCommandAndQueryHandlers();
 
-foreach (var handler in commandHandlers)
-{
-    var interfaceType = handler.GetInterfaces().First(i => 
-        i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICommandHandler<,>));
-    builder.Services.AddScoped(interfaceType, handler);
-}
-
-var queryHandlers = typeof(GetProductHandler).Assembly.GetTypes()
-    .Where(t => t.GetInterfaces().Any(i => 
-        i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IQueryHandler<,>)));
-
-foreach (var handler in queryHandlers)
-{
-    var interfaceType = handler.GetInterfaces().First(i => 
-        i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IQueryHandler<,>));
-    builder.Services.AddScoped(interfaceType, handler);
-}
-
-builder.Services.AddScoped<InternalDispatcher>();
+//TODO: this should be done properly using a marker interface
+builder.Services.AddSingleton<IIdentityService, FakeIdentityService>();
+builder.Services.AddSingleton<IProductRepository, FakeProductRepository>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -44,6 +32,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.MapLoginEndpoints();
 app.MapOrderEndpoints();
 
 app.Run();

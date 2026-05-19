@@ -1,6 +1,7 @@
+using Core.Application.Dispatcher;
 using Core.Domain;
 
-namespace Core.Application.Commands;
+namespace Core.Application.Features.Products;
 
 public record CreateProductCommand(
     string Name, 
