@@ -1,0 +1,22 @@
+{
+  "name": "DigitStarterKit Dev",
+  "dockerComposeFile": [
+    "../compose.yaml",
+    "docker-compose.devcontainer.yml"
+  ],
+  "service": "digitstarterkit",
+  "workspaceFolder": "/src",
+  "shutdownAction": "stopCompose",
+  "overrideCommand": false,
+  "postCreateCommand": "dotnet restore DigitStarterKit.sln",
+  "customizations": {
+    "jetbrains": {
+      "backend": "Rider"
+    },
+    "vscode": {
+      "extensions": [
+        "ms-dotnettools.csharp"
+      ]
+    }
+  }
+}

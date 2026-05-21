@@ -3,11 +3,11 @@ using Core.Domain;
 
 namespace Infrastructure.Features.Products;
 
-public class FakeProductRepository : IProductRepository
+public class RealProductRepository : IProductRepository
 {
     public Task<Product?> GetProduct(Guid id)
     {
-        return Task.FromResult<Product?>(new Product("Fake Product", "From fake repository", 10, Guid.NewGuid()));
+        return Task.FromResult<Product?>(new Product("Real Product", "From real repository", 100, Guid.NewGuid()));
     }
 
     public Task<Product> CreateProduct(Product product)
@@ -15,3 +15,4 @@ public class FakeProductRepository : IProductRepository
         return Task.FromResult(product);
     }
 }
+

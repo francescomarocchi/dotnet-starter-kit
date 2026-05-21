@@ -1,0 +1,7 @@
+services:
+  digitstarterkit:
+    # Keep the container alive for interactive development tools.
+    command: /bin/sh -c "while sleep 1000; do :; done"
+    ports:
+      - "5269:8080"
+

@@ -1,10 +1,11 @@
-﻿FROM mcr.microsoft.com/dotnet/sdk:10.0 AS dev
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS dev
 WORKDIR /src
 COPY ["DigitStarterKit.sln", "./"]
 COPY ["DigitStarterKit/DigitStarterKit.csproj", "DigitStarterKit/"]
 COPY ["Core.Application/Core.Application.csproj", "Core.Application/"]
 COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
 COPY ["Core.Domain/Core.Domain.csproj", "Core.Domain/"]
+COPY ["Core.Application.Tests/Core.Application.Tests.csproj", "Core.Application.Tests/"]
 RUN dotnet restore "DigitStarterKit.sln"
 COPY . .
 EXPOSE 8080
@@ -21,6 +22,7 @@ COPY ["DigitStarterKit/DigitStarterKit.csproj", "DigitStarterKit/"]
 COPY ["Core.Application/Core.Application.csproj", "Core.Application/"]
 COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
 COPY ["Core.Domain/Core.Domain.csproj", "Core.Domain/"]
+COPY ["Core.Application.Tests/Core.Application.Tests.csproj", "Core.Application.Tests/"]
 RUN dotnet restore "DigitStarterKit/DigitStarterKit.csproj"
 COPY . .
 WORKDIR "/src/DigitStarterKit"

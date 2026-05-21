@@ -5,30 +5,14 @@ services:
       context: "/home/frank/Src/digit/dotnet-starter-kit/DigitStarterKit"
       dockerfile: "DigitStarterKit/Dockerfile"
       target: "dev"
-      args:
-        BUILD_CONFIGURATION: "Debug"
     command: []
     entrypoint:
-    - "/opt/JetBrains/RiderDebuggerTools/linux-x64/JetBrains.Debugger.Worker"
-    - "--runtimeconfig"
-    - "/opt/JetBrains/RiderDebuggerTools/JetBrains.Debugger.Worker.runtimeconfig.json"
-    - "--mode=server"
-    - "--frontend-port=57000"
-    - "--backend-port=57200"
-    - "--roslyn-worker-port=57410"
-    - "--timeout=60"
-    environment:
-      RIDER_DEBUGGER_LOG_DIR: "/var/opt/JetBrains/RiderDebuggerTools"
-      RESHARPER_LOG_CONF: "/etc/opt/JetBrains/RiderDebuggerTools/backend-log.xml"
+    - "dotnet"
+    - "/app/bin/Debug/net10.0/DigitStarterKit.dll"
+    environment: {}
     image: "digitstarterkit:dev"
-    ports:
-    - "127.0.0.1:57010:57000"
-    - "127.0.0.1:57210:57200"
-    - "127.0.0.1:57410:57410"
+    ports: []
     volumes:
     - "/home/frank/Src/digit/dotnet-starter-kit/DigitStarterKit/DigitStarterKit:/app:rw"
     - "/home/frank/Src/digit/dotnet-starter-kit/DigitStarterKit:/src-1:rw"
-    - "/home/frank/.local/share/JetBrains/RiderRemoteDebugger/2026.1.0.1/Linux64:/opt/JetBrains/RiderDebuggerTools"
-    - "/home/frank/Portables/Rider/bin/backend-log.xml:/etc/opt/JetBrains/RiderDebuggerTools/backend-log.xml"
-    - "/home/frank/.cache/JetBrains/Rider2026.1/log/DebuggerWorker/JetBrains.Debugger.Worker.2026_5_16_16_17_56:/var/opt/JetBrains/RiderDebuggerTools:rw"
     working_dir: "/app"
