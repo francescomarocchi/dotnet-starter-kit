@@ -2,10 +2,17 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS dev
 WORKDIR /src
 COPY ["DigitStarterKit.sln", "./"]
 COPY ["DigitStarterKit/DigitStarterKit.csproj", "DigitStarterKit/"]
-COPY ["Core.Application/Core.Application.csproj", "Core.Application/"]
-COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
-COPY ["Core.Domain/Core.Domain.csproj", "Core.Domain/"]
-COPY ["Core.Application.Tests/Core.Application.Tests.csproj", "Core.Application.Tests/"]
+COPY ["BuildingBlocks.Modularity/BuildingBlocks.Modularity.csproj", "BuildingBlocks.Modularity/"]
+COPY ["Core/Core.csproj", "Core/"]
+COPY ["Core.Tests/Core.Tests.csproj", "Core.Tests/"]
+COPY ["Modules.Authentication/Modules.Authentication.csproj", "Modules.Authentication/"]
+COPY ["Modules.Authentication.Application/Modules.Authentication.Application.csproj", "Modules.Authentication.Application/"]
+COPY ["Modules.Authentication.Infrastructure/Modules.Authentication.Infrastructure.csproj", "Modules.Authentication.Infrastructure/"]
+COPY ["Modules.Authentication.Tests/Modules.Authentication.Tests.csproj", "Modules.Authentication.Tests/"]
+COPY ["Modules.Products/Modules.Products.csproj", "Modules.Products/"]
+COPY ["Modules.Products.Application/Modules.Products.Application.csproj", "Modules.Products.Application/"]
+COPY ["Modules.Products.Infrastructure/Modules.Products.Infrastructure.csproj", "Modules.Products.Infrastructure/"]
+COPY ["Modules.Products.Tests/Modules.Products.Tests.csproj", "Modules.Products.Tests/"]
 RUN dotnet restore "DigitStarterKit.sln"
 COPY . .
 EXPOSE 8080
@@ -19,10 +26,17 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["DigitStarterKit.sln", "./"]
 COPY ["DigitStarterKit/DigitStarterKit.csproj", "DigitStarterKit/"]
-COPY ["Core.Application/Core.Application.csproj", "Core.Application/"]
-COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
-COPY ["Core.Domain/Core.Domain.csproj", "Core.Domain/"]
-COPY ["Core.Application.Tests/Core.Application.Tests.csproj", "Core.Application.Tests/"]
+COPY ["BuildingBlocks.Modularity/BuildingBlocks.Modularity.csproj", "BuildingBlocks.Modularity/"]
+COPY ["Core/Core.csproj", "Core/"]
+COPY ["Core.Tests/Core.Tests.csproj", "Core.Tests/"]
+COPY ["Modules.Authentication/Modules.Authentication.csproj", "Modules.Authentication/"]
+COPY ["Modules.Authentication.Application/Modules.Authentication.Application.csproj", "Modules.Authentication.Application/"]
+COPY ["Modules.Authentication.Infrastructure/Modules.Authentication.Infrastructure.csproj", "Modules.Authentication.Infrastructure/"]
+COPY ["Modules.Authentication.Tests/Modules.Authentication.Tests.csproj", "Modules.Authentication.Tests/"]
+COPY ["Modules.Products/Modules.Products.csproj", "Modules.Products/"]
+COPY ["Modules.Products.Application/Modules.Products.Application.csproj", "Modules.Products.Application/"]
+COPY ["Modules.Products.Infrastructure/Modules.Products.Infrastructure.csproj", "Modules.Products.Infrastructure/"]
+COPY ["Modules.Products.Tests/Modules.Products.Tests.csproj", "Modules.Products.Tests/"]
 RUN dotnet restore "DigitStarterKit/DigitStarterKit.csproj"
 COPY . .
 WORKDIR "/src/DigitStarterKit"

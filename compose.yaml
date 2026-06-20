@@ -1,4 +1,20 @@
 ﻿services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: digitstarterkit
+      POSTGRES_USER: digit
+      POSTGRES_PASSWORD: digit
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U digit -d digitstarterkit"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   digitstarterkit:
     build:
       context: .
@@ -10,6 +26,10 @@
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:8080
       DOTNET_USE_POLLING_FILE_WATCHER: "1"
+      ConnectionStrings__ProductsDb: Host=postgres;Port=5432;Database=digitstarterkit;Username=digit;Password=digit
+    depends_on:
+      postgres:
+        condition: service_healthy
     ports:
       - "5269:8080"
     volumes:
@@ -18,4 +38,5 @@
 
 volumes:
   nuget-packages:
+  postgres-data:
 

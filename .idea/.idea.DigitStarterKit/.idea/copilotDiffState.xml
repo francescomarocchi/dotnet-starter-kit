@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CopilotDiffPersistence">
+    <option name="pendingDiffs">
+      <map>
+        <entry key="$PROJECT_DIR$/Core.Application/BusinessStrategy/DependencyInjection.cs">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/Core.Application/BusinessStrategy/DependencyInjection.cs" />
+              <option name="originalContent" value="using System.Reflection;&#10;using Microsoft.Extensions.DependencyInjection;&#10;&#10;namespace Core.Application.BusinessStrategy;&#10;&#10;public static class DependencyInjection&#10;{&#10;    public static void AddBusinessStrategies(this IServiceCollection services)&#10;    {&#10;        // Adds the BusinessStrategySelector as a scoped service, allowing it to be injected where needed.&#10;        services.AddScoped(typeof(BusinessStrategySelector&lt;,&gt;));&#10;&#10;        // Adds all BusinessStrategies as scoped services, keyed by the context they are associated with.&#10;        var applicationAssembly = typeof(IBusinessStrategy&lt;,&gt;).Assembly;&#10;        var businessStrategyTypes = applicationAssembly.GetTypes()&#10;            .Where(t =&gt; t.GetCustomAttribute&lt;BusinessStrategyAttribute&gt;() != null &amp;&amp;&#10;                        t is { IsAbstract: false, IsInterface: false });&#10;&#10;        foreach (var strategyType in businessStrategyTypes)&#10;        {&#10;            var attribute = strategyType.GetCustomAttribute&lt;BusinessStrategyAttribute&gt;();&#10;            if (attribute is null)&#10;            {&#10;                continue;&#10;            }&#10;&#10;            var contextKey = attribute.Context;&#10;&#10;            var businessStrategyInterface = strategyType.GetInterfaces()&#10;                .FirstOrDefault(i =&gt; i.IsGenericType &amp;&amp; i.GetGenericTypeDefinition() == typeof(IBusinessStrategy&lt;,&gt;));&#10;&#10;            if (businessStrategyInterface is not null)&#10;            {&#10;                services.AddKeyedScoped(businessStrategyInterface, contextKey, strategyType);&#10;            }&#10;        }&#10;    }&#10;}" />
+              <option name="updatedContent" value="using System.Reflection;&#10;using Microsoft.Extensions.DependencyInjection;&#10;&#10;namespace Core.Application.BusinessStrategy;&#10;&#10;public static class DependencyInjection&#10;{&#10;    public static void AddBusinessStrategies(this IServiceCollection services)&#10;    {&#10;        services.AddBusinessStrategiesFromAssembly(typeof(IBusinessStrategy&lt;,&gt;).Assembly);&#10;    }&#10;&#10;    public static void AddBusinessStrategiesFromAssembly(&#10;        this IServiceCollection services,&#10;        Assembly assembly,&#10;        string? namespacePrefix = null)&#10;    {&#10;        services.AddScoped(typeof(BusinessStrategySelector&lt;,&gt;));&#10;&#10;        var businessStrategyTypes = assembly.GetTypes()&#10;            .Where(t =&gt; t.GetCustomAttribute&lt;BusinessStrategyAttribute&gt;() != null)&#10;            .Where(t =&gt; t is { IsAbstract: false, IsInterface: false })&#10;            .Where(t =&gt; namespacePrefix is null || (t.Namespace?.StartsWith(namespacePrefix, StringComparison.Ordinal) ?? false));&#10;&#10;        foreach (var strategyType in businessStrategyTypes)&#10;        {&#10;            var attribute = strategyType.GetCustomAttribute&lt;BusinessStrategyAttribute&gt;();&#10;            if (attribute is null)&#10;            {&#10;                continue;&#10;            }&#10;&#10;            var contextKey = attribute.Context;&#10;&#10;            var strategyInterfaces = strategyType.GetInterfaces()&#10;                .Where(i =&gt; i.IsGenericType &amp;&amp; i.GetGenericTypeDefinition() == typeof(IBusinessStrategy&lt;,&gt;));&#10;&#10;            foreach (var strategyInterface in strategyInterfaces)&#10;            {&#10;                services.AddKeyedScoped(strategyInterface, contextKey, strategyType);&#10;            }&#10;        }&#10;    }&#10;}" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/Core.Application/DependencyInjection.cs">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/Core.Application/DependencyInjection.cs" />
+              <option name="originalContent" value="using Core.Application.Dispatcher;&#10;using Core.Application.Features.Products;&#10;using Microsoft.Extensions.DependencyInjection;&#10;&#10;namespace Core.Application;&#10;&#10;public static class DependencyInjection&#10;{&#10;    public static void AddCommandAndQueryHandlers(this IServiceCollection services)&#10;    {&#10;        var commandHandlers = typeof(GetProductHandler).Assembly.GetTypes()&#10;            .Where(t =&gt; t.GetInterfaces().Any(i =&gt;&#10;                i.IsGenericType &amp;&amp; i.GetGenericTypeDefinition() == typeof(ICommandHandler&lt;,&gt;)));&#10;&#10;        foreach (var handler in commandHandlers)&#10;        {&#10;            var interfaceType = handler.GetInterfaces().First(i =&gt;&#10;                i.IsGenericType &amp;&amp; i.GetGenericTypeDefinition() == typeof(ICommandHandler&lt;,&gt;));&#10;            services.AddScoped(interfaceType, handler);&#10;        }&#10;&#10;        var queryHandlers = typeof(GetProductHandler).Assembly.GetTypes()&#10;            .Where(t =&gt; t.GetInterfaces().Any(i =&gt;&#10;                i.IsGenericType &amp;&amp; i.GetGenericTypeDefinition() == typeof(IQueryHandler&lt;,&gt;)));&#10;&#10;        foreach (var handler in queryHandlers)&#10;        {&#10;            var interfaceType = handler.GetInterfaces().First(i =&gt;&#10;                i.IsGenericType &amp;&amp; i.GetGenericTypeDefinition() == typeof(IQueryHandler&lt;,&gt;));&#10;            services.AddScoped(interfaceType, handler);&#10;        }&#10;&#10;        services.AddScoped&lt;InternalDispatcher&gt;();&#10;    }&#10;}" />
+              <option name="updatedContent" value="using System.Reflection;&#10;using Core.Application.Dispatcher;&#10;using Microsoft.Extensions.DependencyInjection;&#10;&#10;namespace Core.Application;&#10;&#10;public static class DependencyInjection&#10;{&#10;    public static void AddCommandAndQueryHandlers(this IServiceCollection services)&#10;    {&#10;        services.AddCommandAndQueryHandlersFromAssembly(typeof(DependencyInjection).Assembly);&#10;    }&#10;&#10;    public static void AddCommandAndQueryHandlersFromAssembly(&#10;        this IServiceCollection services,&#10;        Assembly assembly,&#10;        string? namespacePrefix = null)&#10;    {&#10;        var concreteTypes = assembly.GetTypes()&#10;            .Where(t =&gt; t is { IsAbstract: false, IsInterface: false })&#10;            .Where(t =&gt; namespacePrefix is null || (t.Namespace?.StartsWith(namespacePrefix, StringComparison.Ordinal) ?? false));&#10;&#10;        RegisterHandlers(services, concreteTypes, typeof(ICommandHandler&lt;,&gt;));&#10;        RegisterHandlers(services, concreteTypes, typeof(IQueryHandler&lt;,&gt;));&#10;&#10;        services.AddScoped&lt;InternalDispatcher&gt;();&#10;    }&#10;&#10;    private static void RegisterHandlers(&#10;        IServiceCollection services,&#10;        IEnumerable&lt;Type&gt; concreteTypes,&#10;        Type openGenericHandlerType)&#10;    {&#10;        foreach (var implementationType in concreteTypes)&#10;        {&#10;            var serviceInterfaces = implementationType.GetInterfaces()&#10;                .Where(i =&gt; i.IsGenericType &amp;&amp; i.GetGenericTypeDefinition() == openGenericHandlerType);&#10;&#10;            foreach (var serviceType in serviceInterfaces)&#10;            {&#10;                services.AddScoped(serviceType, implementationType);&#10;            }&#10;        }&#10;    }&#10;}" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/Infrastructure/Features/Authentication/DependencyInjection.cs">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/Infrastructure/Features/Authentication/DependencyInjection.cs" />
+              <option name="updatedContent" value="using Core.Application.Features.Authentication;&#10;using Microsoft.Extensions.DependencyInjection;&#10;&#10;namespace Infrastructure.Features.Authentication;&#10;&#10;public static class DependencyInjection&#10;{&#10;    public static IServiceCollection AddAuthenticationInfrastructure(this IServiceCollection services)&#10;    {&#10;        services.AddSingleton&lt;IIdentityService, FakeIdentityService&gt;();&#10;        return services;&#10;    }&#10;}&#10;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/Infrastructure/Features/Products/DependencyInjection.cs">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/Infrastructure/Features/Products/DependencyInjection.cs" />
+              <option name="updatedContent" value="using Core.Application.Features.Products;&#10;using Microsoft.Extensions.DependencyInjection;&#10;&#10;namespace Infrastructure.Features.Products;&#10;&#10;public static class DependencyInjection&#10;{&#10;    public static IServiceCollection AddProductsInfrastructure(this IServiceCollection services)&#10;    {&#10;        services.AddKeyedSingleton&lt;IProductRepository, RealProductRepository&gt;(ProductStrategies.Real);&#10;        services.AddKeyedSingleton&lt;IProductRepository, FakeProductRepository&gt;(ProductStrategies.Fake);&#10;        services.AddSingleton&lt;IProductRepository, RealProductRepository&gt;();&#10;        return services;&#10;    }&#10;}&#10;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/Modules.Authentication/Application/AuthenticationResult.cs">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/Modules.Authentication/Application/AuthenticationResult.cs" />
+              <option name="updatedContent" value="namespace Modules.Authentication.Application;&#10;&#10;public record AuthenticationResult(&#10;    string? AccessToken,&#10;    string? TokenType,&#10;    int? ExpiresIn,&#10;    string? RefreshToken)&#10;{&#10;    public static AuthenticationResult Empty =&gt; new(null, null, null, null);&#10;}&#10;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/Modules.Authentication/Application/IIdentityService.cs">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/Modules.Authentication/Application/IIdentityService.cs" />
+              <option name="updatedContent" value="namespace Modules.Authentication.Application;&#10;&#10;public interface IIdentityService&#10;{&#10;    Task&lt;AuthenticationResult&gt; AuthenticateAsync(string email, string password);&#10;    Task&lt;AuthenticationResult&gt; RotateTokenAsync(string refreshToken);&#10;}&#10;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/Modules.Authentication/Application/LoginCommand.cs">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/Modules.Authentication/Application/LoginCommand.cs" />
+              <option name="updatedContent" value="using Core.Application.Dispatcher;&#10;&#10;namespace Modules.Authentication.Application;&#10;&#10;public record LoginCommand(string Email, string Password) : ICommand&lt;AuthenticationResult&gt;;&#10;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/Modules.Authentication/Application/LoginCommandHandler.cs">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/Modules.Authentication/Application/LoginCommandHandler.cs" />
+              <option name="updatedContent" value="using Core.Application.Dispatcher;&#10;&#10;namespace Modules.Authentication.Application;&#10;&#10;public class LoginCommandHandler(IIdentityService identityService) : ICommandHandler&lt;LoginCommand, AuthenticationResult&gt;&#10;{&#10;    public Task&lt;AuthenticationResult&gt; HandleAsync(LoginCommand command)&#10;    {&#10;        return identityService.AuthenticateAsync(command.Email, command.Password);&#10;    }&#10;}&#10;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/Modules.Authentication/Application/RefreshTokenCommand.cs">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/Modules.Authentication/Application/RefreshTokenCommand.cs" />
+              <option name="updatedContent" value="using Core.Application.Dispatcher;&#10;&#10;namespace Modules.Authentication.Application;&#10;&#10;public record RefreshTokenCommand(string RefreshToken) : ICommand&lt;AuthenticationResult&gt;;&#10;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/Modules.Authentication/Application/RefreshTokenCommandHandler.cs">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/Modules.Authentication/Application/RefreshTokenCommandHandler.cs" />
+              <option name="updatedContent" value="using Core.Application.Dispatcher;&#10;&#10;namespace Modules.Authentication.Application;&#10;&#10;public class RefreshTokenCommandHandler(IIdentityService identityService) : ICommandHandler&lt;RefreshTokenCommand, AuthenticationResult&gt;&#10;{&#10;    public Task&lt;AuthenticationResult&gt; HandleAsync(RefreshTokenCommand command)&#10;    {&#10;        return identityService.RotateTokenAsync(command.RefreshToken);&#10;    }&#10;}&#10;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/Modules.Products/Application/CreateProductCommand.cs">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/Modules.Products/Application/CreateProductCommand.cs" />
+              <option name="updatedContent" value="using Core.Application.Dispatcher;&#10;using Modules.Products.Domain;&#10;&#10;namespace Modules.Products.Application;&#10;&#10;public record CreateProductCommand(&#10;    string Name,&#10;    string Description,&#10;    decimal Price,&#10;    Guid CategoryId&#10;) : ICommand&lt;Product&gt;;&#10;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/Modules.Products/Application/CreateProductHandler.cs">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/Modules.Products/Application/CreateProductHandler.cs" />
+              <option name="updatedContent" value="using Core.Application.Dispatcher;&#10;using Modules.Products.Domain;&#10;&#10;namespace Modules.Products.Application;&#10;&#10;public class CreateProductHandler(IProductRepository productRepository) : ICommandHandler&lt;CreateProductCommand, Product&gt;&#10;{&#10;    public Task&lt;Product&gt; HandleAsync(CreateProductCommand command)&#10;    {&#10;        return productRepository.CreateProduct(new Product(&#10;            command.Name,&#10;            command.Description,&#10;            command.Price,&#10;            command.CategoryId&#10;        ));&#10;    }&#10;}&#10;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/Modules.Products/Application/GetProductFromFakeRepositoryStrategy.cs">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/Modules.Products/Application/GetProductFromFakeRepositoryStrategy.cs" />
+              <option name="updatedContent" value="using Core.Application.BusinessStrategy;&#10;using Microsoft.Extensions.DependencyInjection;&#10;using Modules.Products.Domain;&#10;&#10;namespace Modules.Products.Application;&#10;&#10;[BusinessStrategy(ProductStrategies.Fake)]&#10;public sealed class GetProductFromFakeRepositoryStrategy(IServiceProvider serviceProvider)&#10;    : IBusinessStrategy&lt;GetProductQuery, Product?&gt;&#10;{&#10;    public bool CanHandle(GetProductQuery request)&#10;        =&gt; string.Equals(request.Source, ProductStrategies.Fake, StringComparison.OrdinalIgnoreCase);&#10;&#10;    public Task&lt;Product?&gt; ExecuteAsync(GetProductQuery request, CancellationToken cancellationToken = default)&#10;        =&gt; serviceProvider.GetRequiredKeyedService&lt;IProductRepository&gt;(ProductStrategies.Fake)&#10;            .GetProduct(request.ProductId);&#10;}&#10;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/Modules.Products/Application/GetProductFromRealRepositoryStrategy.cs">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/Modules.Products/Application/GetProductFromRealRepositoryStrategy.cs" />
+              <option name="updatedContent" value="using Core.Application.BusinessStrategy;&#10;using Microsoft.Extensions.DependencyInjection;&#10;using Modules.Products.Domain;&#10;&#10;namespace Modules.Products.Application;&#10;&#10;[BusinessStrategy(ProductStrategies.Real)]&#10;public sealed class GetProductFromRealRepositoryStrategy(IServiceProvider serviceProvider)&#10;    : IBusinessStrategy&lt;GetProductQuery, Product?&gt;&#10;{&#10;    public bool CanHandle(GetProductQuery request)&#10;        =&gt; string.Equals(request.Source, ProductStrategies.Real, StringComparison.OrdinalIgnoreCase);&#10;&#10;    public Task&lt;Product?&gt; ExecuteAsync(GetProductQuery request, CancellationToken cancellationToken = default)&#10;        =&gt; serviceProvider.GetRequiredKeyedService&lt;IProductRepository&gt;(ProductStrategies.Real)&#10;            .GetProduct(request.ProductId);&#10;}&#10;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/Modules.Products/Application/GetProductHandler.cs">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/Modules.Products/Application/GetProductHandler.cs" />
+              <option name="updatedContent" value="using Core.Application.BusinessStrategy;&#10;using Core.Application.Dispatcher;&#10;using Modules.Products.Domain;&#10;&#10;namespace Modules.Products.Application;&#10;&#10;public class GetProductHandler(BusinessStrategySelector&lt;GetProductQuery, Product?&gt; selector)&#10;    : IQueryHandler&lt;GetProductQuery, Product?&gt;&#10;{&#10;    public Task&lt;Product?&gt; HandleAsync(GetProductQuery query)&#10;    {&#10;        return selector.SelectAndExecuteAsync(query);&#10;    }&#10;}&#10;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/Modules.Products/Application/GetProductQuery.cs">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/Modules.Products/Application/GetProductQuery.cs" />
+              <option name="updatedContent" value="using Core.Application.BusinessStrategy;&#10;using Core.Application.Dispatcher;&#10;using Modules.Products.Domain;&#10;&#10;namespace Modules.Products.Application;&#10;&#10;public record GetProductQuery(Guid ProductId, string Source = ProductStrategies.Fake)&#10;    : IQuery&lt;Product?&gt;, IBusinessStrategyRequest&#10;{&#10;    public string StrategyContext =&gt; Source;&#10;}&#10;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/Modules.Products/Application/IProductRepository.cs">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/Modules.Products/Application/IProductRepository.cs" />
+              <option name="updatedContent" value="using Modules.Products.Domain;&#10;&#10;namespace Modules.Products.Application;&#10;&#10;public interface IProductRepository&#10;{&#10;    Task&lt;Product?&gt; GetProduct(Guid id);&#10;    Task&lt;Product&gt; CreateProduct(Product product);&#10;}&#10;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/Modules.Products/Application/ProductStrategies.cs">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/Modules.Products/Application/ProductStrategies.cs" />
+              <option name="updatedContent" value="namespace Modules.Products.Application;&#10;&#10;public static class ProductStrategies&#10;{&#10;    public const string Real = &quot;real&quot;;&#10;    public const string Fake = &quot;fake&quot;;&#10;}&#10;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/Modules.Products/Domain/Product.cs">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/Modules.Products/Domain/Product.cs" />
+              <option name="updatedContent" value="namespace Modules.Products.Domain;&#10;&#10;public record Product(&#10;    string Name,&#10;    string Description,&#10;    decimal Price,&#10;    Guid CategoryId&#10;);&#10;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/tmp_test2.txt">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/tmp_test2.txt" />
+              <option name="updatedContent" value="hello" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
